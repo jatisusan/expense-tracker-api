@@ -16,6 +16,19 @@ export const getCurrentMonthRange = () => {
   };
 };
 
+export const getMonthRange = (month, year) => {
+  const start = new Date(year, month - 1, 1);
+
+  const end = new Date(year, month, 0);
+
+  end.setHours(23, 59, 59, 999);
+
+  return {
+    start,
+    end,
+  };
+};
+
 /**
  * Creates a Prisma date filter from query parameters.
  *

@@ -8,6 +8,7 @@ import expenseRouter from "./routes/expense_routes.js";
 import incomeRouter from "./routes/income_routes.js";
 import dashboardRouter from "./routes/dashboard_routes.js";
 import analyticsRouter from "./routes/analytics_routes.js";
+import budgetRouter from "./routes/budget_routes.js";
 
 import { errorHandler } from "./middlewares/error_middleware.js";
 import { notFoundHandler } from "./middlewares/not_found_middleware.js";
@@ -26,6 +27,7 @@ app.use("/expenses", expenseRouter);
 app.use("/incomes", incomeRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/analytics", analyticsRouter);
+app.use("/budgets", budgetRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

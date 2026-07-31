@@ -24,6 +24,7 @@ model User {
   wallets    Wallet[]
   expenses   Expense[]
   incomes    Income[]
+  budgets    Budget[]
   @@map("users")
 }
 
@@ -42,6 +43,7 @@ model Category {
   user      User     @relation(fields: [userId], references: [id])
   expenses  Expense[]
   incomes   Income[]
+  budgets   Budget[]
   @@unique([ userId, name, type ])
   @@map("categories")
 }
@@ -98,4 +100,24 @@ model Income {
   category    Category @relation(fields: [categoryId], references: [id])
   wallet      Wallet   @relation(fields: [walletId], references: [id])
   @@map("incomes")
+}
+
+model Budget {
+  id         Int      @id @default(autoincrement())
+  amount     Float
+
+  month      Int
+  year       Int
+
+  userId     Int      @map("user_id")
+  categoryId Int      @map("category_id")
+
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user       User     @relation(fields: [userId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@map("budgets")
+  @@unique([userId, categoryId, month, year])
 }
