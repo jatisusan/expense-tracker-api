@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+provider = "prisma-client-js"
+output   = "../src/generated/prisma"
+moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  categories Category[]
+  wallets    Wallet[]
+  expenses   Expense[]
+  incomes    Income[]
+  @@map("users")
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String 
+  type      CategoryType
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id])
+  expenses  Expense[]
+  incomes   Income[]
+  @@unique([ userId, name, type ])
+  @@map("categories")
+}
+
+model Wallet {
+  id        Int      @id @default(autoincrement())
+  name      String
+  balance   Float    @default(0)
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id])
+  expenses  Expense[]
+  incomes   Income[]
+  @@unique([ userId, name ])
+  @@map("wallets")
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  title       String
+  amount      Float
+  date       DateTime
+  description String?
+
+  categoryId  Int      @map("category_id")
+  walletId    Int      @map("wallet_id")
+  userId      Int      @map("user_id")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user        User     @relation(fields: [userId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id])
+  wallet      Wallet   @relation(fields: [walletId], references: [id])
+  @@map("expenses")
+}
+
+model Income {
+  id          Int      @id @default(autoincrement())
+  title       String
+  amount      Float
+  date        DateTime
+  description String?
+
+  categoryId  Int      @map("category_id")
+  walletId    Int      @map("wallet_id")
+  userId      Int      @map("user_id")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user        User     @relation(fields: [userId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id])
+  wallet      Wallet   @relation(fields: [walletId], references: [id])
+  @@map("incomes")
+}
