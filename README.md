@@ -486,18 +486,17 @@ Help users monitor and control their spending.
 
 ### Budgets
 
-- [ ] Create budget
-- [ ] Update budget
-- [ ] Delete budget
-- [ ] Monthly budgets
-- [ ] Category budgets
+- [✓] Create budget
+- [✓] Update budget
+- [✓] Delete budget
+- [✓] Get budgets
+- [✓] Get budgets summary
 
 ### Budget Tracking
 
-- [ ] Remaining budget
-- [ ] Percentage used
-- [ ] Overspending detection
-- [ ] Budget alerts
+- [✓] Remaining budget
+- [✓] Percentage used
+- [✓] Budget status (on track, overspent, warning)
 
 ## 🎉 Deliverable
 

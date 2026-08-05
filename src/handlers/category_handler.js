@@ -12,12 +12,11 @@ export const getCategories = async (req, res) => {
       message: "Categories retrieved successfully",
       data: categories,
     });
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error("Error fetching categories:", e);
     res.status(500).json({
       success: false,
       message: "Internal Server error",
-      error: error.message,
     });
   }
 };
@@ -48,17 +47,17 @@ export const createCategory = async (req, res) => {
       message: "Category created successfully",
       data: category,
     });
-  } catch (error) {
-    if (error.code === "P2002") {
+  } catch (e) {
+    console.error("Error creating category:", e);
+    if (e.code === "P2002") {
       return res.status(409).json({
         success: false,
-        message: "Category already exists.",
+        message: "Category already exists",
       });
     }
     res.status(500).json({
       success: false,
       message: "Internal Server error",
-      error: error.message,
     });
   }
 };
@@ -77,9 +76,26 @@ export const updateCategory = async (req, res) => {
 
   const { name, type } = result.data;
 
+  const userId = req.user.id;
+  const categoryId = Number(req.params.id);
+
   try {
+    const existingCategory = await prisma.category.findFirst({
+      where: {
+        id: categoryId,
+        userId,
+      },
+    });
+
+    if (!existingCategory) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
     const category = await prisma.category.update({
-      where: { id: Number(req.params.id) },
+      where: { id: categoryId },
       data: { name, type },
     });
     res.status(200).json({
@@ -88,28 +104,57 @@ export const updateCategory = async (req, res) => {
       data: category,
     });
   } catch (e) {
+    console.error("Error updating category:", e);
+    if (e.code === "P2002") {
+      return res.status(409).json({
+        success: false,
+        message: "Category already exists",
+      });
+    }
     res.status(500).json({
       success: false,
       message: "Internal Server error",
-      error: e.message,
     });
   }
 };
 
 export const deleteCategory = async (req, res) => {
+  const userId = req.user.id;
+  const categoryId = Number(req.params.id);
   try {
-    const category = await prisma.category.delete({
-      where: { id: Number(req.params.id) },
+    const existingCategory = await prisma.category.findFirst({
+      where: {
+        id: categoryId,
+        userId,
+      },
+    });
+
+    if (!existingCategory) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    await prisma.category.delete({
+      where: { id: categoryId },
     });
     res.status(200).json({
       success: true,
       message: "Category deleted successfully",
     });
   } catch (e) {
+    console.error("Error deleting category:", e);
+    if (e.code === "P2003") {
+      return res.status(409).json({
+        success: false,
+        message:
+          "Cannot delete category because it is being used by existing transactions or budgets",
+      });
+    }
     res.status(500).json({
       success: false,
       message: "Internal Server error",
-      error: e.message,
     });
   }
 };

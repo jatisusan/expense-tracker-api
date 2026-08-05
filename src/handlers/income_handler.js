@@ -67,15 +67,15 @@ export const getAllIncome = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Incomes retrieved successfully.",
+      message: "Incomes retrieved successfully",
       data: incomes,
       pagination,
     });
   } catch (e) {
+    console.error("Error fetching incomes:", e);
     res.status(500).json({
       success: false,
-      message: "Failed to retrieve incomes.",
-      error: e.message,
+      message: "Failed to retrieve incomes",
     });
   }
 };
@@ -95,7 +95,6 @@ export const getIncomeById = async (req, res) => {
           select: {
             id: true,
             name: true,
-            type: true,
           },
         },
         wallet: {
@@ -109,19 +108,19 @@ export const getIncomeById = async (req, res) => {
     if (!income) {
       return res.status(404).json({
         success: false,
-        message: "Income not found.",
+        message: "Income not found",
       });
     }
     res.status(200).json({
       success: true,
-      message: "Income retrieved successfully.",
+      message: "Income retrieved successfully",
       data: income,
     });
   } catch (e) {
+    console.error("Error fetching income:", e);
     res.status(500).json({
       success: false,
-      message: "Failed to retrieve income.",
-      error: e.message,
+      message: "Failed to retrieve income",
     });
   }
 };
@@ -137,7 +136,7 @@ export const createIncome = async (req, res) => {
 
     return res.status(400).json({
       success: false,
-      message: "Validation failed.",
+      message: "Validation failed",
       errors,
     });
   }
@@ -158,7 +157,7 @@ export const createIncome = async (req, res) => {
     if (!wallet) {
       return res.status(404).json({
         success: false,
-        message: "Wallet not found.",
+        message: "Wallet not found",
       });
     }
 
@@ -174,7 +173,7 @@ export const createIncome = async (req, res) => {
     if (!category) {
       return res.status(404).json({
         success: false,
-        message: "Income category not found.",
+        message: "Income category not found",
       });
     }
 
@@ -222,14 +221,14 @@ export const createIncome = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: "Income created successfully.",
+      message: "Income created successfully",
       data: income,
     });
   } catch (e) {
+    console.error("Error creating income:", e);
     return res.status(500).json({
       success: false,
-      message: "Failed to create income.",
-      error: e.message,
+      message: "Failed to create income",
     });
   }
 };
@@ -247,7 +246,7 @@ export const updateIncome = async (req, res) => {
 
     return res.status(400).json({
       success: false,
-      message: "Validation failed.",
+      message: "Validation failed",
       errors,
     });
   }
@@ -265,7 +264,7 @@ export const updateIncome = async (req, res) => {
     if (!existingIncome) {
       return res.status(404).json({
         success: false,
-        message: "Income not found.",
+        message: "Income not found",
       });
     }
 
@@ -284,7 +283,7 @@ export const updateIncome = async (req, res) => {
       if (!wallet) {
         return res.status(404).json({
           success: false,
-          message: "Wallet not found.",
+          message: "Wallet not found",
         });
       }
     }
@@ -302,7 +301,7 @@ export const updateIncome = async (req, res) => {
       if (!category) {
         return res.status(404).json({
           success: false,
-          message: "Income category not found.",
+          message: "Income category not found",
         });
       }
     }
@@ -374,7 +373,6 @@ export const updateIncome = async (req, res) => {
             select: {
               id: true,
               name: true,
-              type: true,
             },
           },
         },
@@ -383,14 +381,14 @@ export const updateIncome = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Income updated successfully.",
+      message: "Income updated successfully",
       data: updatedIncome,
     });
   } catch (e) {
+    console.error("Error updating income:", e);
     return res.status(500).json({
       success: false,
-      message: "Failed to update income.",
-      error: e.message,
+      message: "Failed to update income",
     });
   }
 };
@@ -410,7 +408,7 @@ export const deleteIncome = async (req, res) => {
     if (!income) {
       return res.status(404).json({
         success: false,
-        message: "Income not found.",
+        message: "Income not found",
       });
     }
 
@@ -435,13 +433,13 @@ export const deleteIncome = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Income deleted successfully.",
+      message: "Income deleted successfully",
     });
   } catch (e) {
+    console.error("Error deleting income:", e);
     return res.status(500).json({
       success: false,
-      message: "Failed to delete income.",
-      error: e.message,
+      message: "Failed to delete income",
     });
   }
 };

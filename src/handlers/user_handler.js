@@ -16,7 +16,7 @@ export const registerUser = async (req, res) => {
     });
     return res
       .status(400)
-      .json({ success: false, message: "Validation failed", error: errors });
+      .json({ success: false, message: "Validation failed", errors });
   }
 
   const { name, email, password } = result.data;
@@ -33,14 +33,20 @@ export const registerUser = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
-      user: {
+      data: {
         id: newUser.id,
         name: newUser.name,
         email: newUser.email,
       },
     });
-  } catch (error) {
-    console.error("Error registering user:", error);
+  } catch (e) {
+    console.error("Error registering user:", e);
+    if (e.code === "P2002") {
+      return res.status(409).json({
+        success: false,
+        message: "Email already exists",
+      });
+    }
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -56,7 +62,7 @@ export const loginUser = async (req, res) => {
     });
     return res
       .status(400)
-      .json({ success: false, message: "Validation failed", error: errors });
+      .json({ success: false, message: "Validation failed", errors });
   }
 
   const { email, password } = result.data;
@@ -95,8 +101,8 @@ export const loginUser = async (req, res) => {
       message: "User logged in successfully",
       token,
     });
-  } catch (error) {
-    console.error("Error logging in user:", error);
+  } catch (e) {
+    console.error("Error logging in user:", e);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -122,14 +128,14 @@ export const getUserProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User profile retrieved successfully",
-      user: {
+      data: {
         id: user.id,
         name: user.name,
         email: user.email,
       },
     });
-  } catch (error) {
-    console.error("Error fetching user profile:", error);
+  } catch (e) {
+    console.error("Error fetching user profile:", e);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -147,7 +153,7 @@ export const updateUserProfile = async (req, res) => {
     });
     return res
       .status(400)
-      .json({ success: false, message: "Validation failed", error: errors });
+      .json({ success: false, message: "Validation failed", errors });
   }
 
   const { name, email } = result.data;
@@ -165,14 +171,20 @@ export const updateUserProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User profile updated successfully",
-      user: {
+      data: {
         id: updatedUser.id,
         name: updatedUser.name,
         email: updatedUser.email,
       },
     });
-  } catch (error) {
-    console.error("Error updating user profile:", error);
+  } catch (e) {
+    console.error("Error updating user profile:", e);
+    if (e.code === "P2002") {
+      return res.status(409).json({
+        success: false,
+        message: "Email already exists",
+      });
+    }
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });

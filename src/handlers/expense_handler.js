@@ -24,7 +24,7 @@ export const getExpenses = async (req, res) => {
 
       return res.status(400).json({
         success: false,
-        message: "Validation failed.",
+        message: "Validation failed",
         errors,
       });
     }
@@ -71,11 +71,11 @@ export const getExpenses = async (req, res) => {
       data: expenses,
       pagination,
     });
-  } catch (error) {
+  } catch (e) {
+    console.error("Error fetching expenses:", e);
     res.status(500).json({
       success: false,
-      message: "Internal Server error",
-      error: error.message,
+      message: "Internal server error",
     });
   }
 };
@@ -89,12 +89,25 @@ export const getExpenseById = async (req, res) => {
         id: expenseId,
         userId: req.user.id,
       },
-      include: { category: true },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        wallet: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
     if (!expense) {
       return res.status(404).json({
         success: false,
-        message: "Expense not found.",
+        message: "Expense not found",
       });
     }
     res.status(200).json({
@@ -102,11 +115,11 @@ export const getExpenseById = async (req, res) => {
       message: "Expense fetched successfully",
       data: expense,
     });
-  } catch (error) {
+  } catch (e) {
+    console.error("Error fetching expense:", e);
     res.status(500).json({
       success: false,
-      message: "Internal Server error",
-      error: error.message,
+      message: "Internal server error",
     });
   }
 };
@@ -122,7 +135,7 @@ export const createExpense = async (req, res) => {
 
     return res.status(400).json({
       success: false,
-      message: "Validation failed.",
+      message: "Validation failed",
       errors,
     });
   }
@@ -141,7 +154,7 @@ export const createExpense = async (req, res) => {
       });
 
       if (!category) {
-        throw new Error("Expense category not found.");
+        throw new Error("Expense category not found");
       }
 
       // Verify wallet exists and belongs to user
@@ -153,12 +166,12 @@ export const createExpense = async (req, res) => {
       });
 
       if (!wallet) {
-        throw new Error("Wallet not found.");
+        throw new Error("Wallet not found");
       }
 
       // Optional: prevent negative balance
       if (wallet.balance < amount) {
-        throw new Error("Insufficient wallet balance.");
+        throw new Error("Insufficient wallet balance");
       }
 
       // Create expense
@@ -189,15 +202,23 @@ export const createExpense = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: "Expense created successfully.",
+      message: "Expense created successfully",
       data: expense,
     });
   } catch (e) {
+    console.error("Error creating expense:", e);
+
     if (
-      e.message === "Expense category not found." ||
-      e.message === "Wallet not found." ||
-      e.message === "Insufficient wallet balance."
+      e.message === "Expense category not found" ||
+      e.message === "Wallet not found"
     ) {
+      return res.status(404).json({
+        success: false,
+        message: e.message,
+      });
+    }
+
+    if (e.message === "Insufficient wallet balance") {
       return res.status(400).json({
         success: false,
         message: e.message,
@@ -206,8 +227,7 @@ export const createExpense = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Internal server error.",
-      error: e.message,
+      message: "Internal server error",
     });
   }
 };
@@ -225,7 +245,7 @@ export const updateExpense = async (req, res) => {
 
     return res.status(400).json({
       success: false,
-      message: "Validation failed.",
+      message: "Validation failed",
       errors,
     });
   }
@@ -242,7 +262,7 @@ export const updateExpense = async (req, res) => {
       });
 
       if (!expense) {
-        throw new Error("Expense not found.");
+        throw new Error("Expense not found");
       }
 
       // Validate category if changed
@@ -256,7 +276,7 @@ export const updateExpense = async (req, res) => {
         });
 
         if (!category) {
-          throw new Error("Expense category not found.");
+          throw new Error("Expense category not found");
         }
       }
 
@@ -276,11 +296,11 @@ export const updateExpense = async (req, res) => {
         });
 
         if (!newWallet) {
-          throw new Error("Wallet not found.");
+          throw new Error("Wallet not found");
         }
 
         if (newWallet.balance < newAmount) {
-          throw new Error("Insufficient wallet balance.");
+          throw new Error("Insufficient wallet balance");
         }
 
         // Refund old wallet
@@ -315,11 +335,11 @@ export const updateExpense = async (req, res) => {
         });
 
         if (!wallet) {
-          throw new Error("Wallet not found.");
+          throw new Error("Wallet not found");
         }
 
         if (difference > 0 && wallet.balance < difference) {
-          throw new Error("Insufficient wallet balance.");
+          throw new Error("Insufficient wallet balance");
         }
 
         await tx.wallet.update({
@@ -345,16 +365,24 @@ export const updateExpense = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Expense updated successfully.",
+      message: "Expense updated successfully",
       data: updatedExpense,
     });
   } catch (e) {
+    console.error("Error updating expense:", e);
+
     if (
-      e.message === "Expense not found." ||
-      e.message === "Expense category not found." ||
-      e.message === "Wallet not found." ||
-      e.message === "Insufficient wallet balance."
+      e.message === "Expense not found" ||
+      e.message === "Expense category not found" ||
+      e.message === "Wallet not found"
     ) {
+      return res.status(404).json({
+        success: false,
+        message: e.message,
+      });
+    }
+
+    if (e.message === "Insufficient wallet balance") {
       return res.status(400).json({
         success: false,
         message: e.message,
@@ -363,8 +391,7 @@ export const updateExpense = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Internal server error.",
-      error: e.message,
+      message: "Internal server error",
     });
   }
 };
@@ -383,7 +410,7 @@ export const deleteExpense = async (req, res) => {
       });
 
       if (!expense) {
-        throw new Error("Expense not found.");
+        throw new Error("Expense not found");
       }
 
       // Restore the wallet balance
@@ -408,10 +435,11 @@ export const deleteExpense = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Expense deleted successfully.",
+      message: "Expense deleted successfully",
     });
   } catch (e) {
-    if (e.message === "Expense not found.") {
+    console.error("Error deleting expense:", e);
+    if (e.message === "Expense not found") {
       return res.status(404).json({
         success: false,
         message: e.message,
@@ -420,8 +448,7 @@ export const deleteExpense = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Internal server error.",
-      error: e.message,
+      message: "Internal server error",
     });
   }
 };

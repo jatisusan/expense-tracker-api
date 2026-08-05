@@ -125,7 +125,7 @@ export const getDashboardSummary = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Dashboard summary retrieved successfully.",
+      message: "Dashboard summary retrieved successfully",
       data: {
         currentBalance,
         totalIncome: totalIncomeAmount,
@@ -143,10 +143,10 @@ export const getDashboardSummary = async (req, res) => {
       },
     });
   } catch (e) {
+    console.error("Error fetching dashboard summary:", e);
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve dashboard summary.",
-      error: e.message,
+      message: "Failed to retrieve dashboard summary",
     });
   }
 };
@@ -205,14 +205,14 @@ export const getRecentTransactions = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Recent transactions retrieved successfully.",
+      message: "Recent transactions retrieved successfully",
       data: transactions,
     });
   } catch (e) {
+    console.error("Error fetching recent transactions:", e);
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve recent transactions.",
-      error: e.message,
+      message: "Failed to retrieve recent transactions",
     });
   }
 };

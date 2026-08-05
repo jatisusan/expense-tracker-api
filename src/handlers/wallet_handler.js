@@ -18,10 +18,10 @@ export const getWallets = async (req, res) => {
       data: wallets,
     });
   } catch (e) {
+    console.error("Error fetching wallets:", e);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: e.message,
     });
   }
 };
@@ -40,7 +40,7 @@ export const getWalletById = async (req, res) => {
     if (!wallet) {
       return res.status(404).json({
         success: false,
-        message: "Wallet not found.",
+        message: "Wallet not found",
       });
     }
 
@@ -50,10 +50,10 @@ export const getWalletById = async (req, res) => {
       data: wallet,
     });
   } catch (e) {
+    console.error("Error fetching wallet:", e);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: e.message,
     });
   }
 };
@@ -88,31 +88,23 @@ export const createWallet = async (req, res) => {
       data: wallet,
     });
   } catch (e) {
+    console.error("Error creating wallet:", e);
     if (e.code === "P2002") {
       return res.status(409).json({
         success: false,
-        message: "A wallet with this name already exists.",
-        error: e.message,
+        message: "A wallet with this name already exists",
       });
     }
 
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: e.message,
     });
   }
 };
 
 export const updateWallet = async (req, res) => {
   const walletId = Number(req.params.id);
-
-  if (isNaN(walletId)) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid wallet ID.",
-    });
-  }
 
   const result = updateWalletValidator.safeParse(req.body);
 
@@ -153,22 +145,22 @@ export const updateWallet = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Wallet updated successfully.",
+      message: "Wallet updated successfully",
       data: updatedWallet,
     });
   } catch (e) {
+    console.error("Error updating wallet:", e);
+
     if (e.code === "P2002") {
       return res.status(409).json({
         success: false,
-        message: "A wallet with this name already exists.",
-        error: e.message,
+        message: "A wallet with this name already exists",
       });
     }
 
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: e.message,
     });
   }
 };
@@ -187,26 +179,34 @@ export const deleteWallet = async (req, res) => {
     if (!wallet) {
       return res.status(404).json({
         success: false,
-        message: "Wallet not found.",
+        message: "Wallet not found",
       });
     }
 
     await prisma.wallet.delete({
       where: {
         id: walletId,
-        userId: req.user.id,
       },
     });
 
     return res.status(200).json({
       success: true,
-      message: "Wallet deleted successfully.",
+      message: "Wallet deleted successfully",
     });
   } catch (e) {
+    console.error("Error deleting wallet:", e);
+
+    if (e.code === "P2003") {
+      return res.status(409).json({
+        success: false,
+        message:
+          "Cannot delete wallet because it is being used by existing transactions",
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: e.message,
     });
   }
 };

@@ -4,13 +4,31 @@ import {
   groupTransactionsByMonth,
 } from "../utils/analytics_utils.js";
 import { buildDateFilter } from "../utils/date_utils.js";
+import { analyticsQueryValidator } from "../validators/analytics_validator.js";
 
 // Shows how much has been spent in each category.
 export const getExpenseByCategory = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const { dateFilter } = buildDateFilter(req.query);
+    const result = analyticsQueryValidator.safeParse(req.query);
+
+    if (!result.success) {
+      const errors = result.error.issues.map((issue) => ({
+        field: issue.path[0],
+        message: issue.message,
+      }));
+
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors,
+      });
+    }
+
+    const query = result.data;
+    const { dateFilter } = buildDateFilter(query);
+
     // Calculate total expense amount for each category
     const groupedExpenses = await prisma.expense.groupBy({
       by: ["categoryId"],
@@ -47,14 +65,14 @@ export const getExpenseByCategory = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Expense analytics retrieved successfully.",
+      message: "Expense analytics retrieved successfully",
       data: expenseAnalytics,
     });
   } catch (e) {
+    console.error("Error fetching expense analytics:", e);
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve expense analytics.",
-      error: e.message,
+      message: "Failed to retrieve expense analytics",
     });
   }
 };
@@ -63,7 +81,24 @@ export const getIncomeByCategory = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const { dateFilter } = buildDateFilter(req.query);
+    const result = analyticsQueryValidator.safeParse(req.query);
+
+    if (!result.success) {
+      const errors = result.error.issues.map((issue) => ({
+        field: issue.path[0],
+        message: issue.message,
+      }));
+
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors,
+      });
+    }
+
+    const query = result.data;
+    const { dateFilter } = buildDateFilter(query);
+
     // Calculate total income amount for each category
     const groupedIncomes = await prisma.income.groupBy({
       by: ["categoryId"],
@@ -104,10 +139,10 @@ export const getIncomeByCategory = async (req, res) => {
       data: incomeAnalytics,
     });
   } catch (e) {
+    console.error("Error fetching income analytics:", e);
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve income analytics.",
-      error: e.message,
+      message: "Failed to retrieve income analytics",
     });
   }
 };
@@ -144,14 +179,14 @@ export const getMonthlyExpenseTrend = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Monthly expense trend retrieved successfully.",
+      message: "Monthly expense trend retrieved successfully",
       data: monthlyExpenses,
     });
   } catch (e) {
+    console.error("Error fetching monthly expense trend:", e);
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve monthly expense trend.",
-      error: e.message,
+      message: "Failed to retrieve monthly expense trend",
     });
   }
 };
@@ -188,14 +223,14 @@ export const getMonthlyIncomeTrend = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Monthly income trend retrieved successfully.",
+      message: "Monthly income trend retrieved successfully",
       data: monthlyIncomes,
     });
   } catch (e) {
+    console.error("Error fetching monthly income trend:", e);
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve monthly income trend.",
-      error: e.message,
+      message: "Failed to retrieve monthly income trend",
     });
   }
 };

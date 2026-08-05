@@ -21,7 +21,7 @@ export const getBudgets = async (req, res) => {
 
       return res.status(400).json({
         success: false,
-        message: "Validation failed.",
+        message: "Validation failed",
         errors,
       });
     }
@@ -37,7 +37,6 @@ export const getBudgets = async (req, res) => {
           select: {
             id: true,
             name: true,
-            type: true,
           },
         },
       },
@@ -48,16 +47,16 @@ export const getBudgets = async (req, res) => {
       ],
     });
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Budgets fetched successfully",
       data: budgets,
     });
   } catch (e) {
+    console.error("Error fetching budgets:", e);
     res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: e.message,
     });
   }
 };
@@ -76,7 +75,7 @@ export const createBudget = async (req, res) => {
 
       return res.status(400).json({
         success: false,
-        message: "Validation failed.",
+        message: "Validation failed",
         errors,
       });
     }
@@ -94,7 +93,7 @@ export const createBudget = async (req, res) => {
     if (!category) {
       return res.status(404).json({
         success: false,
-        message: "Category not found.",
+        message: "Category not found",
       });
     }
 
@@ -102,7 +101,7 @@ export const createBudget = async (req, res) => {
     if (category.type !== "EXPENSE") {
       return res.status(400).json({
         success: false,
-        message: "Budgets can only be created for expense categories.",
+        message: "Budgets can only be created for expense categories",
       });
     }
 
@@ -119,7 +118,6 @@ export const createBudget = async (req, res) => {
           select: {
             id: true,
             name: true,
-            type: true,
           },
         },
       },
@@ -127,21 +125,21 @@ export const createBudget = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: "Budget created successfully.",
+      message: "Budget created successfully",
       data: budget,
     });
   } catch (e) {
+    console.error("Error creating budget:", e);
     if (e.code === "P2002") {
       return res.status(409).json({
         success: false,
-        message: "A budget already exists for this category, month, and year.",
+        message: "A budget already exists for this category, month, and year",
       });
     }
 
     return res.status(500).json({
       success: false,
-      message: "Internal server error.",
-      error: e.message,
+      message: "Internal server error",
     });
   }
 };
@@ -161,7 +159,7 @@ export const updateBudget = async (req, res) => {
 
       return res.status(400).json({
         success: false,
-        message: "Validation failed.",
+        message: "Validation failed",
         errors,
       });
     }
@@ -178,7 +176,7 @@ export const updateBudget = async (req, res) => {
     if (!existingBudget) {
       return res.status(404).json({
         success: false,
-        message: "Budget not found.",
+        message: "Budget not found",
       });
     }
 
@@ -194,14 +192,14 @@ export const updateBudget = async (req, res) => {
       if (!category) {
         return res.status(404).json({
           success: false,
-          message: "Category not found.",
+          message: "Category not found",
         });
       }
 
       if (category.type !== "EXPENSE") {
         return res.status(400).json({
           success: false,
-          message: "Budgets can only be assigned to expense categories.",
+          message: "Budgets can only be assigned to expense categories",
         });
       }
     }
@@ -216,29 +214,28 @@ export const updateBudget = async (req, res) => {
           select: {
             id: true,
             name: true,
-            type: true,
           },
         },
       },
     });
 
-    return res.json({
+    return res.status(200).json({
       success: true,
-      message: "Budget updated successfully.",
+      message: "Budget updated successfully",
       data: updatedBudget,
     });
   } catch (e) {
+    console.error("Error updating budget:", e);
     if (e.code === "P2002") {
       return res.status(409).json({
         success: false,
-        message: "A budget already exists for this category, month, and year.",
+        message: "A budget already exists for this category, month, and year",
       });
     }
 
     return res.status(500).json({
       success: false,
-      message: "Internal server error.",
-      error: e.message,
+      message: "Internal server error",
     });
   }
 };
@@ -258,7 +255,7 @@ export const deleteBudget = async (req, res) => {
     if (!budget) {
       return res.status(404).json({
         success: false,
-        message: "Budget not found.",
+        message: "Budget not found",
       });
     }
 
@@ -268,15 +265,15 @@ export const deleteBudget = async (req, res) => {
       },
     });
 
-    return res.json({
+    return res.status(200).json({
       success: true,
-      message: "Budget deleted successfully.",
+      message: "Budget deleted successfully",
     });
   } catch (e) {
+    console.error("Error deleting budget:", e);
     return res.status(500).json({
       success: false,
-      message: "Internal server error.",
-      error: e.message,
+      message: "Internal server error",
     });
   }
 };
@@ -295,7 +292,7 @@ export const getBudgetSummary = async (req, res) => {
 
       return res.status(400).json({
         success: false,
-        message: "Validation failed.",
+        message: "Validation failed",
         errors,
       });
     }
@@ -322,9 +319,9 @@ export const getBudgetSummary = async (req, res) => {
     });
 
     if (budgets.length === 0) {
-      return res.json({
+      return res.status(200).json({
         success: true,
-        message: "Budget summary fetched successfully.",
+        message: "Budget summary fetched successfully",
         data: [],
       });
     }
@@ -374,16 +371,16 @@ export const getBudgetSummary = async (req, res) => {
       }),
     );
 
-    return res.json({
+    return res.status(200).json({
       success: true,
-      message: "Budget summary fetched successfully.",
+      message: "Budget summary fetched successfully",
       data: summaries,
     });
   } catch (e) {
+    console.error("Error fetching budget summary:", e);
     return res.status(500).json({
       success: false,
-      message: "Internal server error.",
-      error: e.message,
+      message: "Internal server error",
     });
   }
 };

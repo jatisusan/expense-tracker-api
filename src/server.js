@@ -1,5 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
 
 import userRouter from "./routes/user_routes.js";
 import categoryRouter from "./routes/category_routes.js";
@@ -20,14 +22,16 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use("/users", userRouter);
-app.use("/categories", categoryRouter);
-app.use("/wallets", walletRouter);
-app.use("/expenses", expenseRouter);
-app.use("/incomes", incomeRouter);
-app.use("/dashboard", dashboardRouter);
-app.use("/analytics", analyticsRouter);
-app.use("/budgets", budgetRouter);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/categories", categoryRouter);
+app.use("/api/v1/wallets", walletRouter);
+app.use("/api/v1/expenses", expenseRouter);
+app.use("/api/v1/incomes", incomeRouter);
+app.use("/api/v1/dashboard", dashboardRouter);
+app.use("/api/v1/analytics", analyticsRouter);
+app.use("/api/v1/budgets", budgetRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
