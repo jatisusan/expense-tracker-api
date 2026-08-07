@@ -599,8 +599,7 @@ Document the API and ensure reliability through testing.
 
 ### Documentation
 
-- [ ] Swagger/OpenAPI
-- [ ] API examples
+- [✓] Swagger/OpenAPI
 - [ ] Installation guide
 - [ ] Environment setup guide
 

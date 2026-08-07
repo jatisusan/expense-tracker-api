@@ -6,6 +6,7 @@ import {
   updateUserProfile,
 } from "../handlers/user_handler.js";
 import { checkAuth } from "../middlewares/auth_middleware.js";
+import { loginLimiter } from "../middlewares/rate_limiter.js";
 
 const router = express.Router();
 
@@ -120,7 +121,7 @@ router.post("/register", registerUser);
  *       500:
  *         description: Internal server error.
  */
-router.post("/login", loginUser);
+router.post("/login", loginLimiter, loginUser);
 
 /**
  * @openapi
