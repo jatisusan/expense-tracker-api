@@ -11,7 +11,7 @@ const router = Router();
 
 /**
  * @openapi
- * /analytics/expenses/categories:
+ * /analytics/expenses/category:
  *   get:
  *     summary: Get expense analytics by category
  *     description: Retrieves the total amount spent for each expense category. Results can be filtered by year or date range.
@@ -68,7 +68,7 @@ router.get("/expenses/category", checkAuth, getExpenseByCategory);
 
 /**
  * @openapi
- * /analytics/income/categories:
+ * /analytics/income/category:
  *   get:
  *     summary: Get income analytics by category
  *     description: Retrieves the total amount received for each income category. Results can be filtered by year or date range.

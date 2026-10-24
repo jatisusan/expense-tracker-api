@@ -4,9 +4,11 @@ import {
   loginUser,
   getUserProfile,
   updateUserProfile,
+  uploadProfileImage,
 } from "../handlers/user_handler.js";
 import { checkAuth } from "../middlewares/auth_middleware.js";
 import { loginLimiter } from "../middlewares/rate_limiter.js";
+import upload from "../middlewares/upload_middleware.js";
 
 const router = express.Router();
 
@@ -225,5 +227,12 @@ router.get("/profile", checkAuth, getUserProfile);
  *         description: Internal server error.
  */
 router.put("/profile", checkAuth, updateUserProfile);
+
+router.post(
+  "/profile/image",
+  checkAuth,
+  upload.single("image"),
+  uploadProfileImage
+);
 
 export default router;

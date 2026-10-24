@@ -169,6 +169,16 @@ export const getRecentTransactions = async (req, res) => {
           title: true,
           amount: true,
           date: true,
+          category: {
+            select: {
+              name: true,
+            },
+          },
+          wallet: {
+            select: {
+              name: true,
+            },
+          },
         },
       }),
 
@@ -185,6 +195,16 @@ export const getRecentTransactions = async (req, res) => {
           title: true,
           amount: true,
           date: true,
+          category: {
+            select: {
+              name: true,
+            },
+          },
+          wallet: {
+            select: {
+              name: true,
+            },
+          },
         },
       }),
     ]);

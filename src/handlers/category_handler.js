@@ -1,11 +1,24 @@
 import prisma from "../db/prisma.js";
-import { categoryValidator } from "../validators/category_validator.js";
+import {
+  categoryValidator,
+  categoryQueryValidator,
+} from "../validators/category_validator.js";
 
 export const getCategories = async (req, res) => {
   try {
     const userId = req.user.id;
+    const result = categoryQueryValidator.safeParse(req.query);
+
+    if (!result.success) {
+      const errors = result.error.issues.map((issue) => {
+        return { field: issue.path[0], message: issue.message };
+      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Validation failed", errors });
+    }
     const categories = await prisma.category.findMany({
-      where: { userId },
+      where: { userId, ...(result.data.type && { type: result.data.type }) },
     });
     res.status(200).json({
       success: true,

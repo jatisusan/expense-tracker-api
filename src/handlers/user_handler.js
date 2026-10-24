@@ -110,7 +110,7 @@ export const loginUser = async (req, res) => {
 };
 
 export const getUserProfile = async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user.id;
 
   try {
     const user = await prisma.user.findUnique({
@@ -125,6 +125,10 @@ export const getUserProfile = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
+    const imageUrl = user.imageUrl
+      ? `${req.protocol}://${req.get("host")}${user.imageUrl}`
+      : null;
+
     return res.status(200).json({
       success: true,
       message: "User profile retrieved successfully",
@@ -132,6 +136,7 @@ export const getUserProfile = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        imageUrl,
       },
     });
   } catch (e) {
@@ -143,7 +148,7 @@ export const getUserProfile = async (req, res) => {
 };
 
 export const updateUserProfile = async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user.id;
 
   const result = updateUserProfileValidator.safeParse(req.body);
 
@@ -188,5 +193,48 @@ export const updateUserProfile = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const uploadProfileImage = async (req, res) => {
+  const userId = req.user.id;
+
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: "Profile image is required",
+    });
+  }
+
+  try {
+    const imageUrl = `/uploads/profiles/${req.file.filename}`;
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        imageUrl,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        imageUrl: true,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile image uploaded successfully",
+      data: updatedUser,
+    });
+  } catch (e) {
+    console.error("Error uploading profile image:", e);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to upload profile image",
+    });
   }
 };

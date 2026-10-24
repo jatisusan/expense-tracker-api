@@ -132,7 +132,6 @@ export const createExpense = async (req, res) => {
       field: issue.path[0],
       message: issue.message,
     }));
-
     return res.status(400).json({
       success: false,
       message: "Validation failed",

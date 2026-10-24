@@ -17,6 +17,7 @@ import budgetRouter from "./routes/budget_routes.js";
 import { errorHandler } from "./middlewares/error_middleware.js";
 import { notFoundHandler } from "./middlewares/not_found_middleware.js";
 import { generalLimiter } from "./middlewares/rate_limiter.js";
+import path from "path";
 
 dotenv.config();
 
@@ -24,8 +25,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Adding helmet() is a single line that applies many security headers at once
-app.use(helmet());
-
+app.use(
+  helmet({
+    crossOriginResourcePolicy: {
+      policy: "cross-origin",
+    },
+  }),
+);
 
 const corsOptions = {
   // Only allow requests from the origin defined in .env
@@ -47,6 +53,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Welcome to the BudgetWise API!");
 });
+
+app.use("/uploads", express.static(path.resolve("uploads")));
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
